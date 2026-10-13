@@ -46,21 +46,54 @@ export default function Sello({ className = "sello" }: { className?: string }) {
         <clipPath id="sello-lente">
           <circle cx="82" cy="100" r="30" />
         </clipPath>
+        {/* La cera en relieve: el surco del canto se recorta de la capa superior. */}
+        <mask id="sello-surco">
+          <rect width="200" height="200" fill="#fff" />
+          <circle cx="100" cy="100" r="86" fill="none" stroke="#000" strokeWidth="1.8" />
+        </mask>
+        {/* Luz desde arriba a la izquierda sobre el alfa suavizado: bisel en el
+            borde y en el surco, con el contorno intacto. */}
+        <filter id="sello-relieve" colorInterpolationFilters="sRGB">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.3" result="alto" />
+          <feDiffuseLighting in="alto" surfaceScale="3.2" diffuseConstant="1.155" lightingColor="#fff" result="difusa">
+            <feDistantLight azimuth="225" elevation="60" />
+          </feDiffuseLighting>
+          <feBlend in="SourceGraphic" in2="difusa" mode="multiply" result="sombreado" />
+          <feSpecularLighting
+            in="alto"
+            surfaceScale="3.2"
+            specularConstant="0.5"
+            specularExponent="40"
+            lightingColor="#fff"
+            result="brillo"
+          >
+            <feDistantLight azimuth="225" elevation="60" />
+          </feSpecularLighting>
+          <feComposite in="sombreado" in2="brillo" operator="arithmetic" k1="0" k2="1" k3="0.35" k4="0" result="luz" />
+          <feComposite in="luz" in2="SourceAlpha" operator="in" />
+        </filter>
+        <filter id="sello-grabado" x="-5%" y="-5%" width="110%" height="110%">
+          <feDropShadow dx="0.35" dy="0.5" stdDeviation="0.25" floodColor="#000" floodOpacity="0.32" />
+        </filter>
       </defs>
       <path d={BORDE} fill="var(--lacre)" />
-      <circle cx="100" cy="100" r="86" fill="none" stroke="#000" strokeOpacity="0.14" strokeWidth="1.6" />
-      <circle cx="100" cy="100" r="79" fill="none" stroke="#fbf1e3" strokeOpacity="0.55" strokeWidth="1.2" />
-      <circle cx="100" cy="100" r="57" fill="none" stroke="#fbf1e3" strokeOpacity="0.55" strokeWidth="1.2" />
-      <text fill="#fbf1e3" fontSize="12.5" style={{ fontFamily: "var(--font-caps), Georgia, serif" }}>
-        <textPath href="#sello-arco" startOffset="0" textLength={VUELTA.toFixed(2)} lengthAdjust="spacing">
-          Sellado en Stellar · Pacta · Seudonimizado ·{" "}
-        </textPath>
-      </text>
-      <g fill="none" stroke="#fbf1e3" strokeWidth="2.2">
-        <circle cx="82" cy="100" r="30" />
-        <circle cx="118" cy="100" r="30" />
+      <path d={BORDE} fill="#000" fillOpacity="0.22" />
+      <path d={BORDE} fill="var(--lacre)" mask="url(#sello-surco)" filter="url(#sello-relieve)" />
+      <g filter="url(#sello-grabado)">
+        <circle cx="100" cy="100" r="79" fill="none" stroke="#fbf1e3" strokeOpacity="0.55" strokeWidth="1.2" />
+        <circle cx="100" cy="100" r="57" fill="none" stroke="#fbf1e3" strokeOpacity="0.55" strokeWidth="1.2" />
+        <text fill="#fbf1e3" fontSize="12.5" style={{ fontFamily: "var(--font-caps), Georgia, serif" }}>
+          {/* El espacio final es duro (U+00A0) para que el último punto no se pegue a la primera letra. */}
+          <textPath href="#sello-arco" startOffset="0" textLength={VUELTA.toFixed(2)} lengthAdjust="spacing">
+            {"Sellado en Stellar · Pacta · Seudonimizado · "}
+          </textPath>
+        </text>
+        <g fill="none" stroke="#fbf1e3" strokeWidth="2.2">
+          <circle cx="82" cy="100" r="30" />
+          <circle cx="118" cy="100" r="30" />
+        </g>
+        <circle cx="118" cy="100" r="30" fill="#fbf1e3" clipPath="url(#sello-lente)" />
       </g>
-      <circle cx="118" cy="100" r="30" fill="#fbf1e3" clipPath="url(#sello-lente)" />
     </svg>
   );
 }
