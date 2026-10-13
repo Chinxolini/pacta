@@ -1,6 +1,6 @@
 # Pacta · app web y `@pacta/sdk`
 
-Demo pública: https://pacta-beta.vercel.app (Stellar testnet, sin valor real).
+Demo pública: https://pacta-demo.vercel.app (Stellar testnet, sin valor real).
 
 - `/` portada · `/demo` préstamo con dos teléfonos (Ana | Larry): firman, se sella en testnet y cada uno descarga el respaldo del contrato · `/verificar` comprobar sello · `/docs` documentación del SDK.
 - `packages/sdk/` — `@pacta/sdk`: Plantilla (Accord Project: TemplateMark + Concerto), Documento (JCS), Sello (`SHA-256(sal ‖ documento)`), Firma (Ed25519 por contrato, SEP-53, passkey WebAuthn), Anclaje del contrato firmado, sin Estado (`memo_hash` + `manage_data`), Verificador y respaldo del contrato (`RespaldoContrato`), Identidad (enchufe del KYC del Integrador: al SDK llega solo un `ver_…`). Opcionales para el Integrador, sin uso en la demo: Pago, Custodia (AES-GCM + Shamir 2 de 3) y Solicitud de borrado (bloqueo y negativa fundada).

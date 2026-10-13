@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Pacta · contratos firmados con el teléfono y sellados en Stellar",
   description:
     "Protocolo y SDK para que dos personas firmen un préstamo desde el teléfono y quede sellado en Stellar. En la cadena queda solo un Sello seudonimizado.",
-  metadataBase: new URL("https://pacta-beta.vercel.app"),
+  metadataBase: new URL("https://pacta-demo.vercel.app"),
   openGraph: {
     title: "Pacta",
     description: "Un papel para lo que se acuerda por WhatsApp. Se firma con passkey y el Sello en Stellar prueba que el documento existía en esa fecha y que nadie lo cambió.",

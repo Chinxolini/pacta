@@ -2,9 +2,9 @@
 
 **Pacta is an open protocol and SDK that lets any app add phone-signed agreements sealed on Stellar.** Two people sign with a passkey (fingerprint or face), no wallet and no XLM. The app seals a salted SHA-256 of the canonical document in a single Stellar transaction (`memo_hash` + `manage_data`). Anyone holding the document and the salt can recompute the Seal and check it against the ledger without trusting Pacta or the integrating app. Only a salted hash goes on-chain: no names, amounts or contract status.
 
-- Live demo (testnet): https://pacta-beta.vercel.app/demo
-- Seal verifier: https://pacta-beta.vercel.app/verificar
-- SDK docs: https://pacta-beta.vercel.app/docs
+- Live demo (testnet): https://pacta-demo.vercel.app/demo
+- Seal verifier: https://pacta-demo.vercel.app/verificar
+- SDK docs: https://pacta-demo.vercel.app/docs
 - Seal specification (recompute it without our SDK): [`docs/especificacion-sello.md`](docs/especificacion-sello.md)
 - Integrator guide: [`docs/guia-integrador.md`](docs/guia-integrador.md)
 - Domain language: [`CONTEXT.md`](CONTEXT.md)
@@ -18,7 +18,7 @@ The rest of this document is in Spanish.
 
 ## Qué es
 
-**Demo pública: https://pacta-beta.vercel.app** · Stellar testnet, sin valor real.
+**Demo pública: https://pacta-demo.vercel.app** · Stellar testnet, sin valor real.
 
 Pacta es un protocolo y SDK (`@pacta/sdk`) que cualquier app, el Integrador,
 incorpora para que dos Partes firmen un Contrato desde el teléfono con passkey,
