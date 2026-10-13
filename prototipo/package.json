@@ -1,0 +1,17 @@
+{
+  "name": "registro-contratos-demo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test-merkle.js && node test-sep53.js && node test-manifiesto.js",
+    "anchor": "node anchor.js",
+    "verify": "node verify.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Certificacion de prueba de mensajeria anclada en Stellar",
+  "dependencies": {
+    "@stellar/stellar-sdk": "^17.0.0"
+  }
+}

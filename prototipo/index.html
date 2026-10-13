@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prueba de mensajería sellada en Stellar</title>
+<script src="https://cdn.jsdelivr.net/npm/@stellar/stellar-sdk@17.0.0/dist/stellar-sdk.min.js"></script>
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#131722; --panel-2:#1a2030; --border:#262d3f;
+    --text:#e8ecf4; --muted:#8a93a8; --accent:#7c9bff; --accent-2:#a78bfa;
+    --ok:#3ddc97; --bad:#ff5d7a; --mono:'SF Mono',Consolas,'Cascadia Code',monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+  body{min-height:100vh;padding:32px 24px 80px;}
+  .wrap{max-width:980px;margin:0 auto;}
+  header{margin-bottom:36px;text-align:center}
+  header .kicker{color:var(--accent);font-size:15px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+  header h1{font-size:clamp(28px,4vw,42px);margin:0 0 12px;line-height:1.15}
+  header p{color:var(--muted);font-size:18px;max-width:640px;margin:0 auto;line-height:1.5}
+  .step{background:var(--panel);border:1px solid var(--border);border-radius:16px;
+    padding:28px 30px;margin-bottom:22px;}
+  .step-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+  .step-num{width:34px;height:34px;border-radius:50%;background:var(--panel-2);
+    border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+    font-weight:700;color:var(--accent);flex-shrink:0;font-size:16px}
+  .step-head h2{font-size:20px;margin:0}
+  .step-head .tag{margin-left:auto;font-size:12px;color:var(--muted);
+    border:1px solid var(--border);border-radius:999px;padding:3px 10px}
+  pre.chat{background:var(--panel-2);border:1px solid var(--border);border-radius:10px;
+    padding:16px 18px;font-family:var(--mono);font-size:13.5px;line-height:1.7;
+    color:#c4cbe0;max-height:280px;overflow:auto;white-space:pre-wrap;word-break:break-word}
+  button{background:var(--accent);color:#0b0e14;border:none;border-radius:10px;
+    padding:13px 22px;font-size:15px;font-weight:700;cursor:pointer;transition:transform .1s, opacity .2s}
+  button:hover:not(:disabled){transform:translateY(-1px)}
+  button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  button.secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+  .log{font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:16px;
+    white-space:pre-wrap;line-height:1.8}
+  .log b{color:var(--text)}
+  .hash{color:var(--accent-2);word-break:break-all}
+  a{color:var(--accent)}
+  .result{margin-top:18px;border-radius:12px;padding:18px 20px;font-size:16px;font-weight:700;
+    display:none;align-items:center;gap:10px}
+  .result.show{display:flex}
+  .result.ok{background:rgba(61,220,151,.12);border:1px solid rgba(61,220,151,.35);color:var(--ok)}
+  .result.bad{background:rgba(255,93,122,.12);border:1px solid rgba(255,93,122,.35);color:var(--bad)}
+  select, textarea{width:100%;background:var(--panel-2);color:var(--text);border:1px solid var(--border);
+    border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:14px;margin-bottom:14px}
+  textarea{min-height:80px;resize:vertical}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:600}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);
+    border-top-color:#0b0e14;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px;line-height:1.7}
+  .badge{display:inline-block;background:var(--panel-2);border:1px solid var(--border);
+    border-radius:6px;padding:2px 8px;font-size:12px;font-family:var(--mono);color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">Stellar × AI Studio Build Challenge</div>
+    <h1>Cada mensaje sellado antes del conflicto</h1>
+    <p>Demo en vivo, sobre <b>Stellar testnet real</b>: se sella la huella de un chat en la
+    blockchain y después se intenta hacer trampa de dos maneras — alterando una letra
+    y borrando la cola del hilo. Las dos fallan. Nada acá está simulado: cada botón
+    dispara una transacción real.</p>
+  </header>
+
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <h2>El corpus</h2>
+      <div class="tag">chat sintético de ejemplo</div>
+    </div>
+    <p style="color:var(--muted);margin-top:0">Un hilo de WhatsApp entre dos personas coordinando
+    la crianza de sus hijos. No es una conversación real — es un ejemplo para la demo.</p>
+    <pre class="chat" id="chatBox">Cargando…</pre>
+  </div>
+
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <h2>Anclar la raíz en Stellar</h2>
+      <div class="tag">testnet</div>
+    </div>
+    <p style="color:var(--muted);margin-top:0">Cada mensaje se convierte en un hash que compromete
+    su sal, <b>su posición y el total de mensajes del hilo</b>. Se combinan de a pares hasta llegar
+    a un único hash — la <b>raíz Merkle</b> — que representa todo el corpus. Esa raíz (32 bytes)
+    se sube al campo <span class="badge">memo</span> de una transacción Stellar real.</p>
+    <p style="color:var(--muted);margin-top:0;font-size:14px">Sellar la posición y el total es lo
+    que impide presentar un hilo mutilado como si estuviera completo.</p>
+    <button id="btnAnchor" onclick="doAnchor()">⚓ Anclar ahora</button>
+    <div class="log" id="anchorLog"></div>
+  </div>
+
+  <div class="step" id="verifyStep" style="opacity:.4;pointer-events:none">
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <h2>Verificar contra la cadena</h2>
+      <div class="tag">consulta directa a Horizon</div>
+    </div>
+    <p style="color:var(--muted);margin-top:0">Elige un mensaje. El verificador <b>no confía en
+    esta página</b>: vuelve a pedirle la raíz a Stellar y reconstruye el hash desde cero.
+    Prueba las dos trampas: edita el texto, o aprieta <b>Simular hilo truncado</b> para
+    presentarlo como si le faltara la mitad de los mensajes.</p>
+    <label for="msgSelect">Mensaje a verificar</label>
+    <select id="msgSelect" onchange="onSelectMessage()"></select>
+    <label for="msgText">Texto a verificar (edítalo para simular una alteración)</label>
+    <textarea id="msgText"></textarea>
+    <div class="row">
+      <button onclick="doVerify()">🔎 Verificar contra Stellar</button>
+      <button class="secondary" onclick="truncar()">✂️ Simular hilo truncado</button>
+      <button class="secondary" onclick="resetText()">↺ Restaurar todo</button>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <footer>
+    Árbol Merkle construido en tu navegador · raíz anclada como <span class="badge">memo_hash</span>
+    en una transacción de <a href="https://stellar.org" target="_blank">Stellar</a> testnet ·
+    ningún mensaje sale de esta página hacia ningún servidor propio.<br/>
+    Ver el <a href="https://stellar.expert/explorer/testnet" target="_blank">explorador testnet</a>.
+  </footer>
+
+</div>
+
+<script>
+const HORIZON_URL = "https://horizon-testnet.stellar.org";
+const FRIENDBOT_URL = "https://friendbot.stellar.org";
+
+const SAMPLE_CHAT = [
+  "[20/08/2026, 09:14:03] Ana: Buenos días, te dejo confirmado que paso a buscar a los niños el viernes a las 18:00",
+  "[20/08/2026, 09:15:41] Ana: Como habíamos quedado en el acuerdo de custodia",
+  "[20/08/2026, 10:02:17] Bruno: Ok, ahí estarán listos",
+  "[20/08/2026, 18:22:05] Ana: Llegué, gracias",
+  "[22/08/2026, 20:11:33] Bruno: Se me complicó el fin de semana que viene, ¿podemos cambiar a sábado?",
+  "[22/08/2026, 20:40:12] Ana: Prefiero mantener el viernes como dice el acuerdo, pero avísame con tiempo",
+  "[25/08/2026, 08:05:44] Bruno: Entendido, va a ser viernes entonces",
+  "[27/08/2026, 19:03:22] Ana: Recuerda que el lunes hay reunión de apoderados a las 8:30",
+  "[27/08/2026, 19:04:01] Ana: Te paso el link por si quieres conectarte",
+  "[28/08/2026, 07:58:19] Bruno: Gracias, ahí estaré",
+  "[03/09/2026, 12:31:09] Ana: Necesito el certificado de matrícula para el trámite de pasaporte",
+  "[03/09/2026, 15:47:52] Bruno: Te lo mando esta semana",
+  "[10/09/2026, 09:20:15] Ana: ¿Pudiste conseguir el certificado?",
+  "[10/09/2026, 09:20:16] Ana: Es urgente, el trámite vence el 20",
+  "[10/09/2026, 21:10:44] Bruno: Perdón, se me pasó, lo tengo mañana",
+  "[11/09/2026, 11:05:02] Bruno: Aquí está, disculpa la demora",
+];
+
+document.getElementById("chatBox").textContent = SAMPLE_CHAT.join("\n");
+
+// ---------- utilidades de bytes ----------
+function toHex(bytes){ return Array.from(bytes).map(b=>b.toString(16).padStart(2,"0")).join(""); }
+function fromHex(hex){ const out=new Uint8Array(hex.length/2); for(let i=0;i<out.length;i++) out[i]=parseInt(hex.substr(i*2,2),16); return out; }
+function concatBytes(a,b){ const out=new Uint8Array(a.length+b.length); out.set(a,0); out.set(b,a.length); return out; }
+function compareBytes(a,b){ const len=Math.min(a.length,b.length); for(let i=0;i<len;i++){ if(a[i]!==b[i]) return a[i]-b[i]; } return a.length-b.length; }
+async function sha256(bytes){ const d=await crypto.subtle.digest("SHA-256", bytes); return new Uint8Array(d); }
+function utf8(str){ return new TextEncoder().encode(str); }
+
+const LEAF_PREFIX = new Uint8Array([0x00]);
+const NODE_PREFIX = new Uint8Array([0x01]);
+function u32be(n){ const b=new Uint8Array(4); new DataView(b.buffer).setUint32(0,n,false); return b; }
+
+// hoja = SHA256(0x00 || sal || u32be(indice) || u32be(total) || mensaje)
+// Comprometer indice y total es lo que impide truncar la cola del hilo.
+async function hashLeaf(message, salt, index, total){
+  return sha256(concatBytes(concatBytes(concatBytes(concatBytes(LEAF_PREFIX, salt), u32be(index)), u32be(total)), utf8(message)));
+}
+// nodo = SHA256(0x01 || izq || der) — orden posicional, no por valor
+async function hashNode(left, right){
+  return sha256(concatBytes(concatBytes(NODE_PREFIX, left), right));
+}
+
+async function buildTree(messages){
+  const total = messages.length;
+  const leaves = [];
+  for (let i=0;i<total;i++){
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const hash = await hashLeaf(messages[i], salt, i, total);
+    leaves.push({ message: messages[i], salt, index: i, hash });
+  }
+  let layer = leaves.map(l => l.hash);
+  const layers = [layer];
+  while (layer.length > 1){
+    const next = [];
+    for (let i=0;i<layer.length;i+=2){
+      if (i+1 < layer.length) next.push(await hashNode(layer[i], layer[i+1]));
+      else next.push(layer[i]);
+    }
+    layers.push(next);
+    layer = next;
+  }
+  return { root: layers[layers.length-1][0], total, leaves, layers };
+}
+
+function getProof(tree, index){
+  const proof = [];
+  let idx = index;
+  for (let level=0; level<tree.layers.length-1; level++){
+    const layerArr = tree.layers[level];
+    const isRight = idx % 2 === 1;
+    const siblingIdx = isRight ? idx-1 : idx+1;
+    if (siblingIdx < layerArr.length) proof.push({ hash: layerArr[siblingIdx], position: isRight ? 'left' : 'right' });
+    idx = Math.floor(idx/2);
+  }
+  return proof;
+}
+
+async function verifyProof(message, salt, index, total, proof, root){
+  if(!Number.isInteger(index)||!Number.isInteger(total)) return false;
+  if(index<0||total<=0||index>=total) return false;
+  let hash = await hashLeaf(message, salt, index, total);
+  for (const s of proof) hash = s.position==='left' ? await hashNode(s.hash, hash) : await hashNode(hash, s.hash);
+  return toHex(hash) === toHex(root);
+}
+
+// ---------- estado ----------
+let TREE = null, TX_HASH = null, PUBLIC_KEY = null, TAMPER_TOTAL = null;
+
+function log(el, html){ document.getElementById(el).innerHTML += html + "\n"; }
+
+// ---------- paso 2: anclar ----------
+async function doAnchor(){
+  const btn = document.getElementById("btnAnchor");
+  btn.disabled = true;
+  const logEl = document.getElementById("anchorLog");
+  logEl.innerHTML = "";
+
+  try {
+    log("anchorLog", `<span class="spinner"></span>Construyendo árbol Merkle de ${SAMPLE_CHAT.length} mensajes…`);
+    TREE = await buildTree(SAMPLE_CHAT);
+    const rootHex = toHex(TREE.root);
+    log("anchorLog", `🌳 Raíz: <span class="hash">${rootHex}</span>`);
+
+    log("anchorLog", `<span class="spinner"></span>Generando cuenta Stellar testnet…`);
+    const kp = StellarSdk.Keypair.random();
+    PUBLIC_KEY = kp.publicKey();
+    log("anchorLog", `🔑 <b>${PUBLIC_KEY}</b>`);
+
+    log("anchorLog", `<span class="spinner"></span>Financiando vía friendbot…`);
+    const fundRes = await fetch(`${FRIENDBOT_URL}?addr=${encodeURIComponent(PUBLIC_KEY)}`);
+    if (!fundRes.ok) throw new Error(`friendbot: ${fundRes.status}`);
+
+    log("anchorLog", `<span class="spinner"></span>Anclando raíz en una transacción (memo_hash)…`);
+    const server = new StellarSdk.Horizon.Server(HORIZON_URL);
+    const account = await server.loadAccount(PUBLIC_KEY);
+    const tx = new StellarSdk.TransactionBuilder(account, {
+      fee: StellarSdk.BASE_FEE,
+      networkPassphrase: StellarSdk.Networks.TESTNET,
+    })
+      .addOperation(StellarSdk.Operation.payment({
+        destination: PUBLIC_KEY,
+        asset: StellarSdk.Asset.native(),
+        amount: "0.0000001",
+      }))
+      .addMemo(StellarSdk.Memo.hash(rootHex))
+      .setTimeout(60)
+      .build();
+    tx.sign(kp);
+    const result = await server.submitTransaction(tx);
+    TX_HASH = result.hash;
+
+    log("anchorLog", `✅ <b>Anclado en Stellar testnet</b>`);
+    log("anchorLog", `Tx: <span class="hash">${TX_HASH}</span>`);
+    log("anchorLog", `<a href="https://stellar.expert/explorer/testnet/tx/${TX_HASH}" target="_blank">Ver en el explorador →</a>`);
+
+    // habilitar paso 3
+    const sel = document.getElementById("msgSelect");
+    sel.innerHTML = SAMPLE_CHAT.map((m,i)=>`<option value="${i}">${i}. ${m.replace(/"/g,'&quot;').slice(0,70)}${m.length>70?'…':''}</option>`).join("");
+    document.getElementById("verifyStep").style.opacity = 1;
+    document.getElementById("verifyStep").style.pointerEvents = "auto";
+    onSelectMessage();
+    btn.textContent = "⚓ Anclar de nuevo (nueva transacción)";
+  } catch(err){
+    log("anchorLog", `❌ Error: ${err.message || err}`);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function onSelectMessage(){
+  const idx = parseInt(document.getElementById("msgSelect").value, 10);
+  document.getElementById("msgText").value = TREE.leaves[idx].message;
+  document.getElementById("result").className = "result";
+}
+
+function resetText(){ TAMPER_TOTAL = null; onSelectMessage(); }
+
+// Simula a la parte que lleva al juicio solo la primera mitad del hilo,
+// borrando los mensajes donde queda mal parada.
+function truncar(){
+  TAMPER_TOTAL = Math.max(1, Math.floor(TREE.total / 2));
+  const r = document.getElementById("result");
+  r.className = "result show bad";
+  r.innerHTML = "✂️ Presentando el hilo como si tuviera " + TAMPER_TOTAL +
+    " mensajes en vez de " + TREE.total + ". Ahora aprieta Verificar.";
+}
+
+// ---------- paso 3: verificar contra la cadena ----------
+async function doVerify(){
+  const idx = parseInt(document.getElementById("msgSelect").value, 10);
+  const presented = document.getElementById("msgText").value;
+  const leaf = TREE.leaves[idx];
+  const resultEl = document.getElementById("result");
+  resultEl.className = "result show";
+  resultEl.innerHTML = `<span class="spinner"></span>Consultando Stellar testnet…`;
+
+  try {
+    const server = new StellarSdk.Horizon.Server(HORIZON_URL);
+    const txData = await server.transactions().transaction(TX_HASH).call();
+    const onChainRootHex = toHex(Uint8Array.from(atob(txData.memo), c => c.charCodeAt(0)));
+    const onChainRoot = fromHex(onChainRootHex);
+
+    const proof = getProof(TREE, idx);
+    const claimedTotal = TAMPER_TOTAL !== null ? TAMPER_TOTAL : TREE.total;
+    const ok = await verifyProof(presented, leaf.salt, idx, claimedTotal, proof, onChainRoot);
+
+    resultEl.className = "result show " + (ok ? "ok" : "bad");
+    if (ok) {
+      resultEl.innerHTML = `✅ VÁLIDO — reconstruye la raíz anclada on-chain, sellada el ${new Date(txData.created_at).toLocaleString('es-CL')}`;
+    } else if (TAMPER_TOTAL !== null) {
+      resultEl.innerHTML = `❌ INVÁLIDO — el hilo se presentó con ${TAMPER_TOTAL} mensajes, pero se sellaron ${TREE.total}. Cada hoja lleva dentro el largo del hilo: borrar la cola rompe todas a la vez.`;
+    } else {
+      resultEl.innerHTML = `❌ INVÁLIDO — este texto NO reconstruye la raíz anclada. Una sola letra alterada rompe toda la cadena de hashes.`;
+    }
+  } catch(err){
+    resultEl.className = "result show bad";
+    resultEl.innerHTML = `❌ Error: ${err.message || err}`;
+  }
+}
+</script>
+</body>
+</html>
