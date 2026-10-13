@@ -144,15 +144,14 @@ export default function Verificador() {
                   <li>Que las firmas corresponden a las claves que figuran en el documento.</li>
                 </ul>
                 <p>
-                  <strong>Qué no prueba</strong>
+                  <strong>Qué acredita el Integrador</strong>
                 </p>
                 <ul className="vinculos">
                   <li>
-                    Quiénes son las personas detrás de esas claves: eso lo acredita la aplicación que verificó su
-                    identidad.
+                    Quiénes son las personas detrás de esas claves, con la identidad que verificó la aplicación.
                   </li>
-                  <li>Que la deuda esté pagada o impaga.</li>
-                  <li>No es una firma ante notario: es firma electrónica simple.</li>
+                  <li>El estado de la deuda: Pacta no lo registra, a propósito.</li>
+                  <li>Firma electrónica simple (Ley 19.799), para contratos que no exigen notario.</li>
                 </ul>
               </div>
             )}

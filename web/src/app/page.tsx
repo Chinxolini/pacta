@@ -92,22 +92,22 @@ export default function Portada() {
       </section>
 
       <section className="prose" id="limites">
-        <h2>Lo que Pacta no da</h2>
+        <h2>Alcance legal</h2>
         <p>
-          Pacta entrega la prueba de que el documento existía en esa fecha y que nadie lo cambió, y un texto bien
-          redactado. La identidad de las Partes la verifica el Integrador con su KYC y responde por ella. Sirve para contratos que la ley no obliga a hacer
-          ante notario, como un préstamo, un reconocimiento de deuda o la compraventa de un mueble.
+          Pacta le da a un acuerdo cotidiano lo que le faltaba: un documento electrónico firmado por las dos
+          Partes, con una fecha que cualquiera puede comprobar y un texto bien redactado. Llegar a juicio con ese
+          documento, y no con un trato de palabra, es la diferencia entre tener un caso y no tenerlo. La identidad
+          de las Partes la verifica el Integrador con su KYC y responde por ella. Sirve para contratos que la ley
+          no obliga a hacer ante notario, como un préstamo, un reconocimiento de deuda o la compraventa de un
+          mueble.
         </p>
         <ul>
+          <li>Firma electrónica simple (Ley 19.799): en juicio vale como instrumento privado.</li>
           <li>
-            Firma electrónica simple. En juicio, el documento vale como instrumento privado y no hace
-            plena prueba (Ley 19.799, arts. 3 y 5).
+            El Sello prueba existencia e integridad. El Integrador acredita quién está detrás de cada clave con el
+            vínculo persona-clave.
           </li>
-          <li>Sin mérito ejecutivo. Para cobrar por la vía ejecutiva hay que pasar antes por un tribunal.</li>
-          <li>
-            El Sello prueba existencia e integridad. Por sí solo no prueba quién firmó. Eso lo acredita el
-            Integrador con el vínculo persona-clave.
-          </li>
+          <li>No es un título ejecutivo: para cobrar, el camino pasa por un tribunal, donde este documento es la base.</li>
           <li>Los actos que exigen escritura pública o notario quedan fuera.</li>
         </ul>
       </section>

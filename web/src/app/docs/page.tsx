@@ -196,10 +196,10 @@ export default function Docs() {
             <Link href="/verificar">comprobar sello</Link>.
           </p>
           <p>
-            Lo que Pacta no da. La firma es simple, así que en juicio el documento vale como instrumento privado y no
-            hace plena prueba (Ley 19.799, arts. 3 y 5). No tiene mérito ejecutivo. El Sello prueba existencia e
-            integridad, y por sí solo no prueba quién firmó. Sirve para contratos que la ley no obliga a hacer ante
-            notario.
+            Alcance legal. Es firma electrónica simple (Ley 19.799): en juicio el documento vale como instrumento
+            privado, y llegar con él en vez de con un trato de palabra marca la diferencia entre tener un caso y no
+            tenerlo. El Sello prueba existencia e integridad, y el Integrador acredita quién firmó con el vínculo
+            persona-clave. Sirve para contratos que la ley no obliga a hacer ante notario.
           </p>
         </section>
 

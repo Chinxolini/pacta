@@ -44,17 +44,12 @@ Para quien integra: [`docs/especificacion-sello.md`](docs/especificacion-sello.m
 (formato del Sello, para recalcularlo sin depender del SDK) y
 [`docs/guia-integrador.md`](docs/guia-integrador.md) (cómo incorporarlo a una app).
 
-### Qué prueba y qué no
+### Qué entrega
 
-Prueba:
 - Que el documento existía en la fecha y hora de la red.
 - Que no cambió desde entonces: cualquier cambio, aun de una coma, rompe la coincidencia.
-- Que las dos firmas del documento son válidas para las claves que firmaron.
-
-No prueba:
-- Quién está detrás de cada clave: eso lo acredita el Integrador con su KYC.
-- Que el dinero se entregó ni que se pagará. No promete cobro ni tiene mérito ejecutivo.
-- Aceptación judicial: es firma electrónica simple, sin presunción de autoría.
+- Que las dos firmas son válidas para las claves que firmaron; el Integrador acredita con su KYC quién está detrás de cada una.
+- Un documento electrónico firmado, fechado y verificable por cualquiera: en juicio, la diferencia entre llegar con un trato de palabra y llegar con un documento.
 
 ### Estado
 
@@ -100,18 +95,9 @@ node anchor.js sample-chat.txt   # ancla en testnet
 node verify.js 10                # verifica la cadena completa
 ```
 
-## Qué no es
+## Alcance legal
 
-Pacta no da fe pública. El Sello prueba que el documento existía en esa fecha
-y que nadie lo cambió. Por sí solo no prueba quién firmó ni que el dinero se
-entregó. Con firma electrónica simple, el documento vale en juicio como
-instrumento privado y no hace plena prueba (Ley 19.799, arts. 3 y 5). Tampoco
-tiene mérito ejecutivo. La presunción legal de autoría en Chile la da la firma
-electrónica avanzada de un prestador acreditado (Ley 19.799, art. 5). Los actos
-que exigen escritura pública o notario quedan fuera.
-
-Jurídicamente Pacta es firma electrónica simple (art. 2 f, Ley 19.799) con atributos técnicos de una avanzada, sin certificación de prestador acreditado; no existe una categoría intermedia y no gana la imposibilidad de desconocer la autoría, la fe de fecha ni el mérito ejecutivo.
-
+Pacta no da fe pública ni reemplaza la escritura pública. Es firma electrónica simple (Ley 19.799, art. 2 f) con los atributos técnicos de una avanzada, sin prestador acreditado: el documento vale en juicio como instrumento privado, y el cobro por vía ejecutiva pasa antes por un tribunal. Sirve para actos que la ley no obliga a hacer ante notario.
 
 ## Equipo
 

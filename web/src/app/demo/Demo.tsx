@@ -84,8 +84,8 @@ function Escena() {
       </div>
 
       <p className="small demo-limite">
-        El Sello prueba que el documento existía en esa fecha y que nadie lo cambió. No prueba quién firmó: la identidad
-        la verifica el Integrador con su propio KYC, que la demo no simula. <Link href="/#limites">Lo que Pacta no da</Link>
+        El Sello prueba que el documento existía en esa fecha y que nadie lo cambió. La identidad de las Partes la verifica
+        el Integrador con su propio KYC, que la demo no simula. <Link href="/#limites">Alcance legal</Link>
       </p>
       <details className="ajustes small">
         <summary>Ajustes de la presentación</summary>
