@@ -258,37 +258,13 @@ code,
   padding-left: 1.1rem;
 }
 
-/* Sello tipo lacre */
-.seal {
-  position: relative;
+/* Sello de Pacta (componente Sello.tsx) */
+.sello {
+  display: block;
   width: min(100%, 17rem);
-  aspect-ratio: 1;
+  height: auto;
   margin: 0 auto;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, var(--lacre-soft), var(--lacre) 60%, #5e1a10);
-  color: #fbf1e3;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15), inset 0 0 0 10px rgba(255, 255, 255, 0.08),
-    inset 0 0 0 12px rgba(0, 0, 0, 0.12);
-  font-family: var(--font-caps), Georgia, serif;
-  letter-spacing: 0.1em;
-}
-
-.seal .seal-inner {
-  padding: 1.5rem;
-}
-
-.seal strong {
-  display: block;
-  font-size: 1.8rem;
-  font-weight: 400;
-}
-
-.seal span {
-  display: block;
-  font-size: 0.75rem;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.25));
 }
 
 .stamp {
@@ -312,7 +288,7 @@ code,
 }
 
 .note {
-  border-left: 3px solid var(--lacre);
+  border-left: 1px solid var(--lacre);
   padding: 0.3rem 0 0.3rem 1rem;
   color: var(--ink-soft);
   font-style: italic;
@@ -516,7 +492,7 @@ code,
   background: var(--ok);
   color: var(--paper);
   font-size: 1.7rem;
-  animation: estampar 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  animation: estampar 0.45s cubic-bezier(0.25, 1, 0.5, 1) both;
 }
 
 .respaldo-linea {
@@ -602,9 +578,10 @@ code,
 .lacre.puesto {
   border: 0;
   color: #fbf1e3;
-  background: radial-gradient(circle at 35% 30%, var(--lacre-soft), var(--lacre) 60%, #5e1a10);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15), inset 0 0 0 6px rgba(255, 255, 255, 0.08), inset 0 0 0 8px rgba(0, 0, 0, 0.12);
-  animation: estampar 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  background: var(--lacre);
+  box-shadow: 0 3px 8px -2px rgba(0, 0, 0, 0.35), inset 0 0 0 6px color-mix(in srgb, var(--paper) 14%, transparent),
+    inset 0 0 0 7px color-mix(in srgb, var(--paper) 40%, transparent);
+  animation: estampar 0.55s cubic-bezier(0.25, 1, 0.5, 1) both;
 }
 
 @keyframes late {
@@ -897,7 +874,7 @@ code,
 .aviso {
   background: var(--paper-deep);
   padding: 0.6rem;
-  border-left: 3px solid var(--lacre);
+  border-left: 1px solid var(--lacre);
 }
 
 .alerta {
@@ -1062,7 +1039,7 @@ code,
 }
 
 .nota-recuperacion {
-  border-left: 3px solid var(--ok);
+  border-left: 1px solid var(--ok);
   padding-left: 0.6rem;
 }
 

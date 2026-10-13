@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Sello from "./Sello";
 
 export default function Portada() {
   return (
@@ -25,13 +26,7 @@ export default function Portada() {
           </div>
         </div>
         <div aria-hidden="true">
-          <div className="seal">
-            <div className="seal-inner">
-              <span>Sellado en Stellar</span>
-              <strong>Pacta</strong>
-              <span>Seudonimizado</span>
-            </div>
-          </div>
+          <Sello />
         </div>
       </section>
 
